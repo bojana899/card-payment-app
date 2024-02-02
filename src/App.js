@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import CardForm from "./components/CardForm ";
 import CardRegistrationForm from "./components/CardRegistrationForm";
+import CardDisplay from "./components/CardDisplay";
+import EditCardForm from "./components/EditCardForm";
 import Modal from "react-modal";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -13,17 +14,13 @@ const stripePromise = loadStripe("pk_test_51OeeiiDkuocCJB4kAnXkMevdSPbBruwYM4nNi
 function App() {
   const [cards, setCards] = useState([]);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-  const [customerId, setCustomerId] = useState(""); // Define the customerId state
+  const [customerId, setCustomerId] = useState("");
+  const [editCardIndex, setEditCardIndex] = useState(-1);
 
   useEffect(() => {
-    // Fetch the initial customer ID or set it based on your application logic
     const fetchCustomerId = async () => {
       try {
-        // Fetch the customer ID from your server or set it based on your logic
-        // Example: const customerId = await fetchCustomerIdFromServer();
-        // For now, I'll set it to your actual customer ID.
         const customerId = "cus_PTmNlBKIkkoH4s";
-
         setCustomerId(customerId);
       } catch (error) {
         console.error("Failed to fetch customer ID:", error);
@@ -62,7 +59,6 @@ function App() {
   };
 
   useEffect(() => {
-    // Fetch the initial list of saved cards when the component mounts
     const fetchCards = async () => {
       try {
         const response = await fetch(`http://localhost:3001/v1/customers/cus_PTmNlBKIkkoH4s/cards`);
@@ -78,19 +74,35 @@ function App() {
     };
 
     fetchCards();
-  }, [customerId]); // Include customerId as a dependency to re-fetch cards when it changes
+  }, [customerId]);
+
+  const handleEditCard = (index) => {
+    setEditCardIndex(index);
+  };
+
+  const handleEditCardClose = () => {
+    setEditCardIndex(-1);
+  };
 
   return (
     <div className="App">
       <Elements stripe={stripePromise}>
         <h1>Bank Card Management</h1>
-        <CardForm onSave={handleSaveCard} />
+
         <div>
           <h2>Saved Cards</h2>
-          <ul>
+
+          <ul className="cards-list">
             {cards.map((card, index) => (
-              <li key={index}>
-                Card Number: {card.cardNumber}, Expiration: {card.expirationDate}
+              <li key={index} className="card-item">
+                {/* Wrap the card item in a clickable container */}
+                <div onClick={() => handleEditCard(index)}>
+                  <CardDisplay
+                    cardNumber={card.cardNumber}
+                    expirationDate={card.expirationDate}
+                    cardholderName={card.cardholderName}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -102,8 +114,23 @@ function App() {
           contentLabel="Card Registration Modal"
         >
           <Elements stripe={stripePromise}>
-            {/* Pass the customerId to CardRegistrationForm */}
             <CardRegistrationForm onSave={handleSaveCard} customerId={customerId} />
+          </Elements>
+        </Modal>
+
+        <Modal
+          isOpen={editCardIndex !== -1}
+          onRequestClose={handleEditCardClose}
+          contentLabel="Edit Card Modal"
+        >
+          <Elements stripe={stripePromise}>
+            {editCardIndex !== -1 && (
+              <EditCardForm
+                cardData={cards[editCardIndex]}
+                onSave={handleSaveCard}
+                onClose={handleEditCardClose}
+              />
+            )}
           </Elements>
         </Modal>
       </Elements>
