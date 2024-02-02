@@ -1,26 +1,38 @@
-// src/components/CardRegistrationForm.js
 import React, { useState } from "react";
-import "./CardRegistrationForm.css"
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import "./CardRegistrationForm.css";
 
-const CardRegistrationForm = ({ onSave }) => {
+const CardRegistrationForm = ({ onSave, customerId }) => {
     const [name, setName] = useState("");
-    const [cardNumber, setCardNumber] = useState("");
-    const [expirationDate, setExpirationDate] = useState("");
-    const [securityCode, setSecurityCode] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSave = () => {
-        const cardData = {
-            name,
-            cardNumber,
-            expirationDate,
-            securityCode,
-        };
-        onSave(cardData);
-        // Clear form fields after saving
-        setName("");
-        setCardNumber("");
-        setExpirationDate("");
-        setSecurityCode("");
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const handleSave = async () => {
+        if (!stripe || !elements) {
+            // Stripe.js has not yet loaded.
+            return;
+        }
+
+        setLoading(true);
+
+        // Create a PaymentMethod using the CardElement
+        const result = await stripe.createPaymentMethod({
+            type: "card",
+            card: elements.getElement(CardElement),
+            billing_details: {
+                name: name,
+            },
+        });
+
+        if (result.error) {
+            console.error(result.error);
+            setLoading(false);
+        } else {
+            // Pass the PaymentMethod ID and customer ID to your onSave function
+            onSave(result.paymentMethod.id, customerId);
+        }
     };
 
     return (
@@ -50,41 +62,13 @@ const CardRegistrationForm = ({ onSave }) => {
                     />
                 </div>
                 <div className="field-container">
-                    <label htmlFor="cardnumber">Card Number</label>
-                    <input
-                        id="cardnumber"
-                        type="text"
-                        pattern="[0-9]*"
-                        inputMode="numeric"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                    />
-                    {/* Your SVG code for the card icon */}
-                </div>
-                <div className="field-container">
-                    <label htmlFor="expirationdate">Expiration (mm/yy)</label>
-                    <input
-                        id="expirationdate"
-                        type="text"
-                        pattern="[0-9]*"
-                        inputMode="numeric"
-                        value={expirationDate}
-                        onChange={(e) => setExpirationDate(e.target.value)}
-                    />
-                </div>
-                <div className="field-container">
-                    <label htmlFor="securitycode">Security Code</label>
-                    <input
-                        id="securitycode"
-                        type="text"
-                        pattern="[0-9]*"
-                        inputMode="numeric"
-                        value={securityCode}
-                        onChange={(e) => setSecurityCode(e.target.value)}
-                    />
+                    <label>Card Details</label>
+                    <CardElement options={{ style: { base: { fontSize: "16px" } } }} />
                 </div>
             </div>
-            <button onClick={handleSave}>Save</button>
+            <button onClick={handleSave} disabled={loading}>
+                {loading ? "Processing..." : "Save"}
+            </button>
         </div>
     );
 };
