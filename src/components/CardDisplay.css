@@ -1,41 +1,88 @@
 .card-display {
-    background-color: #0079bf;
-    color: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
-    margin: 10px;
+    height: 180px;
+    background: linear-gradient(45deg, #0045c7, #ff2c7d);
+    color: #fff;
+    cursor: pointer;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    backface-visibility: hidden;
     position: relative;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 10px;
+    border-radius: 10px;
+    /* Add border radius */
 }
 
-.card-display .card-number {
-    font-size: 20px;
-    letter-spacing: 4px;
-    margin-bottom: 15px;
-    text-align: center;
+.card-display:hover {
+    transform: rotateY(-180deg);
 }
 
-.card-display .expiration-date {
-    text-align: right;
-}
-
-.card-display .cardholder-name {
-    text-align: left;
-    font-size: 16px;
-    margin-bottom: 15px;
-}
-
-/* Optional: Add a logo or a card chip image */
-.card-display:before {
-    content: '';
+.map-img {
+    width: 100%;
     position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 40px;
-    height: 30px;
-    background-image: url('data:image/svg+xml;base64,...');
-    /* Add your base64 encoded image here */
-    background-size: cover;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+    z-index: -1;
+    border-radius: 10px;
+    /* Add border radius */
+}
+
+.card-number {
+    font-size: 18px;
+    margin-top: 50px;
+    /* Center the card number */
+}
+
+.expiration-date {
+    font-size: 16px;
+    /* Adjust the font size as needed */
+    margin-top: 10px;
+    /* Center the expiration date */
+}
+
+.card-holder {
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.bar {
+    background: #222;
+    margin-left: -20px;
+    margin-right: -20px;
+    height: 40px;
+    margin-top: 10px;
+}
+
+.card-cvv {
+    margin-top: 10px;
+}
+
+.card-cvv div {
+    flex: 1;
+}
+
+.card-cvv img {
+    width: 100%;
+    display: block;
+    line-height: 0;
+}
+
+.card-cvv p {
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.card-text {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.signature {
+    margin-top: 10px;
 }

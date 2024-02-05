@@ -89,8 +89,8 @@ function App() {
       <Elements stripe={stripePromise}>
         <h1>Bank Card Management</h1>
 
-        <div>
-          <h2>Saved Cards</h2>
+        <div className="center-container">
+          <button onClick={() => setShowRegistrationModal(true)}>Add New Card</button>
 
           <ul className="cards-list">
             {cards.map((card, index) => (
@@ -107,7 +107,7 @@ function App() {
             ))}
           </ul>
         </div>
-        <button onClick={() => setShowRegistrationModal(true)}>Add New Card</button>
+
         <Modal
           isOpen={showRegistrationModal}
           onRequestClose={() => setShowRegistrationModal(false)}

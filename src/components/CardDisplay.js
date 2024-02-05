@@ -1,6 +1,6 @@
 import "./CardDisplay.css"
 
-function CardDisplay({ cardNumber, expirationDate, cardholderName, brandCard }) {
+function CardDisplay({ cardNumber, expirationDate }) {
     return (
         <div className="card-display" >
 
