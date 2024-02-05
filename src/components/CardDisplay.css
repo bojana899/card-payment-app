@@ -11,7 +11,7 @@
     position: relative;
     margin: 10px;
     border-radius: 10px;
-    /* Add border radius */
+
 }
 
 .card-display:hover {
@@ -26,20 +26,20 @@
     opacity: 0.3;
     z-index: -1;
     border-radius: 10px;
-    /* Add border radius */
+
 }
 
 .card-number {
     font-size: 18px;
     margin-top: 50px;
-    /* Center the card number */
+
 }
 
 .expiration-date {
     font-size: 16px;
-    /* Adjust the font size as needed */
+
     margin-top: 10px;
-    /* Center the expiration date */
+
 }
 
 .card-holder {

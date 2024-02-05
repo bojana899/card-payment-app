@@ -10,7 +10,7 @@ const EditCardForm = ({ cardData, onSave }) => {
     const elements = useElements();
 
     useEffect(() => {
-        // Populate the form fields with the existing card data when the component mounts
+
         if (cardData) {
             setName(cardData.name);
         }
@@ -18,13 +18,13 @@ const EditCardForm = ({ cardData, onSave }) => {
 
     const handleSave = async () => {
         if (!stripe || !elements) {
-            // Stripe.js has not yet loaded.
+
             return;
         }
 
         setLoading(true);
 
-        // Use Stripe.js to create a payment method token.
+
         const result = await stripe.createPaymentMethod({
             type: "card",
             card: elements.getElement(CardElement),
@@ -36,7 +36,7 @@ const EditCardForm = ({ cardData, onSave }) => {
         if (result.error) {
             console.error(result.error);
         } else {
-            // Pass the payment method token to your onSave function.
+
             onSave(result.paymentMethod.id);
         }
 

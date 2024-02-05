@@ -8,11 +8,10 @@ app.use(express.json());
 
 
 
-// Corrected path
+
 app.get("/v1/customers/:id/cards", async (req, res) => {
     const customerId = req.params.id;
     try {
-        // Assuming you're using the Payment Methods API
         const paymentMethods = await stripe.paymentMethods.list({
             customer: customerId,
             type: 'card',
@@ -36,13 +35,10 @@ app.post("/v1/customers/:id/sources", async (req, res) => {
 
     try {
         const { paymentMethod } = req.body;
-
-        // Attach the payment method to the existing customer
         await stripe.paymentMethods.attach(paymentMethod, {
             customer: customerId,
         });
 
-        // Fetch the updated list of payment methods
         const paymentMethods = await stripe.paymentMethods.list({
             customer: customerId,
             type: 'card',
@@ -53,13 +49,47 @@ app.post("/v1/customers/:id/sources", async (req, res) => {
             expirationDate: `${card.card.exp_month}/${card.card.exp_year}`,
         }));
 
-        res.json(cardList); // Respond with the updated list of cards
+        res.json(cardList);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to save card" });
     }
 });
 
+
+app.post("/v1/customers/:customerId/cards/:cardId", async (req, res) => {
+    const { customerId, cardId } = req.params;
+    const { expirationMonth, expirationYear, cardholderName } = req.body;
+
+    try {
+        await stripe.paymentMethods.update(cardId, {
+            card: {
+                exp_month: expirationMonth,
+                exp_year: expirationYear,
+            },
+            billing_details: {
+                name: cardholderName,
+            },
+        });
+
+        const paymentMethods = await stripe.paymentMethods.list({
+            customer: customerId,
+            type: 'card',
+        });
+
+        const cardList = paymentMethods.data.map(card => ({
+            cardNumber: card.card.last4,
+            expirationDate: `${card.card.exp_month}/${card.card.exp_year}`,
+            cardholderName: card.billing_details.name,
+            cardId: card.id,
+        }));
+
+        res.json(cardList);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to update card" });
+    }
+});
 
 
 app.listen(3001, () => {

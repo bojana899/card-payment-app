@@ -58,6 +58,40 @@ function App() {
     setShowRegistrationModal(false);
   };
 
+  const handleUpdateCard = async (paymentMethod) => {
+    try {
+      if (editCardIndex !== -1) {
+        const cardData = cards[editCardIndex];
+        const cardId = cardData.cardId;
+        const response = await fetch(`http://localhost:3001/v1/customers/${customerId}/cards/${cardId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            expirationMonth: cardData.expirationMonth,
+            expirationYear: cardData.expirationYear,
+            cardholderName: cardData.cardholderName,
+            paymentMethod: paymentMethod,
+          }),
+        });
+
+        if (response.ok) {
+          const updatedCardList = await response.json();
+          setCards(updatedCardList);
+          setEditCardIndex(-1);
+        } else {
+          console.error("Failed to update card.");
+        }
+      }
+    } catch (error) {
+      console.error("Error while updating card:", error);
+    }
+
+    setShowRegistrationModal(false);
+  };
+
+
   useEffect(() => {
     const fetchCards = async () => {
       try {
@@ -127,7 +161,7 @@ function App() {
             {editCardIndex !== -1 && (
               <EditCardForm
                 cardData={cards[editCardIndex]}
-                onSave={handleSaveCard}
+                onSave={handleUpdateCard}
                 onClose={handleEditCardClose}
               />
             )}

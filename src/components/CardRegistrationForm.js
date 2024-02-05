@@ -17,7 +17,6 @@ const CardRegistrationForm = ({ onSave, customerId }) => {
 
         setLoading(true);
 
-        // Create a PaymentMethod using the CardElement
         const result = await stripe.createPaymentMethod({
             type: "card",
             card: elements.getElement(CardElement),
@@ -30,7 +29,6 @@ const CardRegistrationForm = ({ onSave, customerId }) => {
             console.error(result.error);
             setLoading(false);
         } else {
-            // Pass the PaymentMethod ID and customer ID to your onSave function
             onSave(result.paymentMethod.id, customerId);
         }
     };
@@ -43,10 +41,10 @@ const CardRegistrationForm = ({ onSave, customerId }) => {
             <div className="container preload">
                 <div className="creditcard">
                     <div className="front">
-                        {/* Your SVG code for the credit card front */}
+
                     </div>
                     <div className="back">
-                        {/* Your SVG code for the credit card back */}
+
                     </div>
                 </div>
             </div>
